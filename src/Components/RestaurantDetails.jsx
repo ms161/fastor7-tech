@@ -40,7 +40,7 @@ const RestaurantDetails = () => {
       {filteredData.map((e) => (
         <div>
             
-          <img src={e.images[0].url} alt="" />
+          <img className="m-auto" src={e.images[0].url} alt="" />
           <p>{e.restaurant_name}</p>
           <p>{e.location?.location_address_2}</p>
           <p>{e.merchant_payment_methods}</p>

@@ -1,38 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 const StartingPage = () => {
+  const [mobile, setMobile] = useState();
+  const navigate = useNavigate();
+  const fetchData = async (e) => {
+    e.preventDefault();
 
-  
- 
-    const fetchData = async (e) => {
-      e.preventDefault()
-      console.log('running')
-      try {
-        const response = await fetch(
-          "https://staging.fastor.in/v1/pwa/user/register",
-          {
-            headers: {
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTgxMCIsImVtYWlsIjoiOTgxODk3OTQ1MEBmYXN0b3IuaW4iLCJwaG9uZSI6Ijk4MTg5Nzk0NTAiLCJkaWFsX2NvZGUiOiIrOTEiLCJsYXN0X3Bhc3N3b3JkX3VwZGF0ZSI6IjIwMjAtMTItMTlUMTE6MTM6MjQuMDAwWiIsImlhdCI6MTY5Nzc0MTU5NCwiZXhwIjoxNzA0OTk5MTk0fQ.bOJ0rFC6hz1iyioo_ypuOhzQtSF_VtHXA1SsIOzdYC8",
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const responseData = await response.json();
-        
-        console.log(responseData);
-      } catch (error) {
-        // Handle error
-        console.error("Error fetching data:", error);
+    var urlencoded = new URLSearchParams();
+    urlencoded.append("phone", mobile);
+    urlencoded.append("dial_code", "+91");
+    try {
+      const res = await fetch(
+        "https://staging.fastor.in/v1/pwa/user/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: urlencoded,
+        }
+      );
+
+      const data = await res.json();
+      console.log(data);
+      if (res.ok) {
+        navigate("/verification");
+      } else {
+        throw Error(data.error_message);
       }
-    };
+    } catch (error) {
+      alert(error);
+    }
+  };
 
- 
-  
-
-
-  
+  const mobileNo = (e) => {
+    setMobile(e.target.value);
+  };
 
   return (
     <>
@@ -41,21 +43,24 @@ const StartingPage = () => {
         we will send you the 4 digit verification code
       </p>
       <div className="md:flex flex-col md:items-center">
-        <form onSubmit={fetchData} className="flex flex-col justify-center items-center">
+        <form
+          onSubmit={fetchData}
+          className="flex flex-col justify-center items-center"
+        >
           <input
+            onChange={mobileNo}
             required
             className="border border-gray-300 py-4 px-20 rounded-lg mt-6 w-96 text-center"
             type="number"
             placeholder="Enter your mobile number"
           />
-          <Link to={"/verification"}>
-            <button
-              type="submit"
-              className="py-4 px-20 bg-red-400 mt-6 rounded-lg text-white w-96"
-            >
-              Send Code
-            </button>
-          </Link>
+
+          <button
+            type="submit"
+            className="py-4 px-20 bg-red-400 mt-6 rounded-lg text-white w-96"
+          >
+            Send Code
+          </button>
         </form>
       </div>
     </>
